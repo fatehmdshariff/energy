@@ -1,0 +1,30 @@
+# Core Data & Machine Learning
+numpy
+pandas
+scikit-learn
+joblib
+tqdm
+
+# Time Series & Forecasting
+statsmodels
+pmdarima
+prophet
+tsfresh
+sktime
+
+# Deep Learning (optional for LSTM, GRU)
+tensorflow
+keras
+
+# Visualization
+matplotlib
+seaborn
+plotly
+
+# Streamlit Dashboard
+streamlit
+
+# Real-time Scheduling & APIs
+requests
+schedule
+apscheduler

@@ -6,6 +6,13 @@ __pycache__/
 # C extensions
 *.so
 
+#chatgpt recommendations and the venv 
+venv_energy/
+__pycache__/
+*.pyc
+.DS_Store
+.env
+
 # Distribution / packaging
 .Python
 build/
