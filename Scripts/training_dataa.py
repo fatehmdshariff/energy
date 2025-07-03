@@ -7,7 +7,6 @@ import pandas as pd
 import os
 from dotenv import load_dotenv
 
-# Load API key from .env
 load_dotenv()
 API_KEY = os.getenv("EIA_API_KEY")
 BASE_URL = "https://api.eia.gov/v2/electricity/rto/region-data/data/"
