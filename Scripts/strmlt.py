@@ -7,19 +7,19 @@ from dotenv import load_dotenv
 from datetime import datetime
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
-# ---------------------- 1. Load environment variables ----------------------
+#  Load environment variables
 load_dotenv()
 API_KEY = os.getenv("EIA_API_KEY")
 
-# ---------------------- 2. Page settings ----------------------
+#  Page settings
 st.set_page_config(page_title="Live Energy Load Forecast", layout="wide")
 st.title("🔌 Real-Time Energy Load Forecast")
 
-# ---------------------- 3. Load model ----------------------
+# Load model 
 model_path = "../models/rf_model_eia_2023.pkl"
 model = joblib.load(model_path)
 
-# ---------------------- 4. Load model training metadata ----------------------
+#  Load model training metadata 
 meta_path = "../models/model_metadata.txt"
 if os.path.exists(meta_path):
     with open(meta_path, 'r') as f:
@@ -29,10 +29,10 @@ else:
 
 # Display training date in the sidebar
 st.sidebar.title("🧠 Model Info")
-st.sidebar.markdown(f"**Model:** `rf_model_eia_2023.pkl`")
+st.sidebar.markdown(f"**Model:** Random Forest Model")
 st.sidebar.markdown(f"**Last Trained:** `{last_trained}`")
 
-# ---------------------- 5. Fetch latest data ----------------------
+#  Fetch latest data
 @st.cache_data(show_spinner=True)
 def fetch_latest_data():
     url = f"https://api.eia.gov/v2/electricity/rto/region-data/data/?api_key={API_KEY}&frequency=hourly&data[0]=value&facets[respondent][]=CAL"
@@ -54,7 +54,7 @@ def fetch_latest_data():
     df = df.set_index('datetime')
     return df
 
-# ---------------------- 6. Feature engineering ----------------------
+# Feature engineering
 @st.cache_data(show_spinner=False)
 def prepare_features(df):
     df['hour'] = df.index.hour
@@ -69,7 +69,7 @@ def prepare_features(df):
     df = df.dropna()
     return df
 
-# ---------------------- 7. Prediction ----------------------
+# Prediction
 @st.cache_data(show_spinner=False)
 def predict(df, _model):
     features = ['hour', 'dayofweek', 'month', 'is_weekend',
@@ -78,7 +78,7 @@ def predict(df, _model):
     df['predicted_load'] = _model.predict(X)
     return df
 
-# ---------------------- 8. Main execution ----------------------
+#  Main execution
 with st.spinner("Fetching live data and generating predictions..."):
     df_live = fetch_latest_data()
     if df_live is not None:
