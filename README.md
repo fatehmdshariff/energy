@@ -1,124 +1,136 @@
-
 # ⚡ Energy Load Forecasting Dashboard (EIA API)
 
-This project provides a real-time dashboard to monitor, forecast, and evaluate electricity consumption using machine learning.
-It leverages the U.S. Energy Information Administration (EIA) API to fetch hourly electricity usage, trains a Random Forest model, and visualizes predictions through an interactive Streamlit app.
+This project provides a **real-time dashboard** to monitor, forecast, and evaluate electricity consumption using ML.  
+It pulls **hourly California load** from the **U.S. Energy Information Administration (EIA)** API, trains a **Random Forest** model, and visualizes predictions in a **Streamlit** app.
 
-📌 Features
+---
 
-🔄 Fetches real-time and historical load data from the EIA API
+## 📌 Features
+- 🔄 Fetches **real-time & historical** data from EIA
+- 🤖 Trains and **re-trains** Random Forest regression models
+- 📊 **Streamlit** dashboard (actual vs. predicted)
+- 📈 Tracks **MAE, RMSE, R²**
+- 💾 Saves datasets & trained models
 
-🤖 Trains and re-trains Random Forest regression models
+---
 
-📊 Streamlit dashboard to visualize actual vs predicted load
-
-📈 Tracks model performance with MAE, RMSE, and R² Score
-
-📥 Automatically saves datasets and trained models for reuse
-
-🗂 Project Structure
+## 🗂 Project Structure
+```text
 energy/
-│
 ├── Datasets/
 │   ├── eia_training_data_2023.csv          # Cleaned historical load data
 │   └── household_power_consumption.txt     # (Additional UCI dataset)
-│
 ├── models/
 │   ├── model_metadata.txt                  # Metadata (training timestamp, etc.)
-│   ├── rf_features.pkl                     # Saved feature set
-│   ├── rf_model_eia_2023.pkl               # Trained RF model on EIA dataset
-│   ├── rf_model_hourly_latest.pkl          # Latest updated model
-│   └── rf_model_hourly.pkl                 # Alternate model version
-│
+│   ├── rf_features.pkl                     # Saved feature list
+│   ├── rf_model_eia_2023.pkl               # Trained RF model on EIA
+│   ├── rf_model_hourly_latest.pkl          # Latest hourly model
+│   └── rf_model_hourly.pkl                 # Alternate hourly model
 ├── Scripts/
-│   ├── Model_eval_EIA.ipynb                # EIA dataset evaluation notebook
-│   ├── model_eval_UCI.ipynb                # UCI dataset evaluation notebook
-│   ├── retrain_model_energy.py             # Re-trains RF model using new data
-│   ├── strmlt.py                           # Streamlit dashboard app
-│   └── training_dataa.py                   # Downloads & saves 2023 training data
-│
-├── .env                                    # API key (not committed)
-├── .gitignore                              # Ignore .env, models, and generated files
-├── LICENSE                                 # MIT License
-├── README.md                               # Project documentation
-└── requirements.txt                        # Required Python packages
+│   ├── Model_eval_EIA.ipynb                # EIA model eval notebook
+│   ├── model_eval_UCI.ipynb                # UCI dataset exploration
+│   ├── retrain_model_energy.py             # Weekly retrain script (manual run)
+│   ├── strmlt.py                           # Streamlit app
+│   └── training_dataa.py                   # Downloads 2023 training data
+├── .env                                    # EIA_API_KEY=... (not committed)
+├── .gitignore                              # Ignores .env and generated files
+├── LICENSE                                 # MIT
+└── requirements.txt                        # Python dependencies
 
-🚀 Setup Instructions
-1. Clone the Repository
+
+🚀 Setup
+# 1) Clone
 git clone https://github.com/fatehmdshariff/energy.git
 cd energy
 
-2. Install Dependencies
+# 2) (Optional) Create venv
+python -m venv venv
+# Windows
+venv\Scripts\activate
+# macOS/Linux
+source venv/bin/activate
+
+# 3) Install
 pip install -r requirements.txt
 
-3. Add Your API Key
 
-Create a .env file in the root directory and add your EIA API key:
 
-EIA_API_KEY=your_api_key_here https://www.eia.gov/opendata/register.php
+🔑 Set your API key
+Create a .env file in the repo root:
+EIA_API_KEY=your_api_key_here
+Get a free key: https://www.eia.gov/opendata/register.php
+
 
 🛠 Usage
-✅ Fetch Historical Data (optional)
+
+Fetch historical data (optional)
 python Scripts/training_dataa.py
 
-🔁 Retrain the Model
+Retrain the model (adds latest hourly data, updates model)
 python Scripts/retrain_model_energy.py
 
-📺 Launch the Streamlit Dashboard
+Launch the Streamlit dashboard
 streamlit run Scripts/strmlt.py
 
-🧠 Machine Learning Model
+
+
+🧠 Model & Features
 
 Algorithm: Random Forest Regressor
 
-Feature Engineering:
+Features used:
 
-Hour of the day
+hour, day_of_week, month, is_weekend
 
-Day of the week
+Lags: load_mw.shift(1), shift(2), shift(24)
 
-Month of the year
+shift(1) → previous hour
 
-Weekend indicator
+shift(24) → same hour yesterday (captures daily pattern)
 
-Lag features (t-1, t-2, t-24)
+Rolling means: rolling(window=3).mean(), rolling(window=24).mean()
 
-Rolling mean features (3-hour, 24-hour averages)
+smooth short-term noise and capture day-level trend
 
-📊 Model Performance
+📊 Performance (latest run)
 Metric	Value
 MAE	608.48
 RMSE	1140.39
 R²	0.9932
 
-✅ Captures both hourly and daily patterns
-✅ Low error values → accurate short-term predictions
-✅ High R² (~0.99) → explains nearly all variance
+Trained on California hourly load; model captures strong hourly & daily seasonality.
 
-📚 Notebooks
+🧪 Notebooks
 
-Model_eval_EIA.ipynb: Training & evaluation using the EIA dataset
+Scripts/Model_eval_EIA.ipynb — training & evaluation on EIA data
 
-model_eval_UCI.ipynb: Experimental testing on UCI household dataset
+Scripts/model_eval_UCI.ipynb — exploratory/experimental UCI analysis
 
-🚧 Future Improvements
+🔁 Retraining (planned automation)
 
-Add LSTM / GRU deep learning models for better sequence modeling
+Script: Scripts/retrain_model_energy.py (currently run manually weekly)
 
-Enable region/zone selection via dropdown in the dashboard
+Next: schedule via Windows Task Scheduler or cron to:
 
-Automate weekly retraining with Windows Scheduler / Cron
+pull latest hourly data (EIA),
 
-Deploy to Streamlit Cloud / Heroku
+append to dataset,
 
-Add alerts for demand anomalies
+retrain & overwrite rf_model_hourly_latest.pkl,
+
+log metrics in models/model_metadata.txt.
+
+📦 Deploy (optional)
+
+Streamlit Cloud: push repo and set EIA_API_KEY as a secret
+
+Heroku/Render: add buildpack for Python, run streamlit run Scripts/strmlt.py
 
 🙌 Author
 
-Fateh Mohammed Shariff
-📍 Bangalore, India
-🔗 GitHub
+Fateh Mohammed Shariff — Bangalore, India
+GitHub: https://github.com/fatehmdshariff
 
 📄 License
+MIT License
 
-This project is licensed under the MIT License.
