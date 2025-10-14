@@ -16,7 +16,7 @@ st.set_page_config(page_title="Live Energy Load Forecast", layout="wide")
 st.title("🔌 Real-Time Energy Load Forecast")
 
 # Load model 
-model_path = "../models/rf_model_eia_2023.pkl"
+model_path = "models/rf_model_eia_2023.pkl"
 model = joblib.load(model_path)
 
 #  Load model training metadata 
