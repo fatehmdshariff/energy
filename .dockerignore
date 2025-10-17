@@ -1,0 +1,13 @@
+*.log
+*.tmp
+.git
+node_modules
+.env
+__pycache__
+*.pyc
+.DS_Store
+venv
+venv/
+**/venv
+**venv
+exclude-sync.txt
