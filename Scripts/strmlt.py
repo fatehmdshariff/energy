@@ -6,6 +6,12 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+from pathlib import Path
+
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+
+MODEL1_PATH = ROOT_DIR / "models" / "rf_model_eia_2023.pkl"
 
 #  Load environment variables
 load_dotenv()
@@ -15,9 +21,17 @@ API_KEY = os.getenv("EIA_API_KEY")
 st.set_page_config(page_title="Live Energy Load Forecast", layout="wide")
 st.title("🔌 Real-Time Energy Load Forecast")
 
+<<<<<<< HEAD
 # Load model 
 model_path = "models/rf_model_eia_2023.pkl"
 model = joblib.load(model_path)
+||||||| parent of 9f141d8 (deploy ready)
+# Load model 
+model_path = "../models/rf_model_eia_2023.pkl"
+model = joblib.load(model_path)
+=======
+model = joblib.load(MODEL1_PATH)
+>>>>>>> 9f141d8 (deploy ready)
 
 #  Load model training metadata 
 meta_path = "../models/model_metadata.txt"
